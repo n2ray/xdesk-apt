@@ -81,6 +81,7 @@ jobs:
         find site -type f | sort
     - name: Publish to gh-pages
       run: |
+        sudo chown -R "$(id -u):$(id -g)" site
         cd site
         git init -q -b gh-pages
         git config user.name "github-actions[bot]"
