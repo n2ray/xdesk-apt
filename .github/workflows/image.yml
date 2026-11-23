@@ -1,0 +1,47 @@
+name: Image
+
+# The image XDesk's built-in Ubuntu installs from (the app downloads it from this repository's releases): the
+# artifact of a successful "Built-in Linux image" run in n2ray/xdesk (linux/build-rootfs.sh), checked and published
+# here as a release. A new installation starts from it; installed systems follow xdesk-core instead.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'release tag, e.g. ubuntu2604-r2 (the app has it in BuiltinLinux.IMAGE_URL)'
+        required: true
+      run_id:
+        description: 'n2ray/xdesk linux-rootfs.yml run id (empty: the latest successful one on builtin-linux)'
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Fetch the image
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        id="${{ inputs.run_id }}"
+        [ -n "$id" ] || id=$(gh run list -R n2ray/xdesk -w linux-rootfs.yml -b builtin-linux -s success -L 1 --json databaseId -q '.[0].databaseId')
+        echo "run $id"
+        gh run view "$id" -R n2ray/xdesk --json headSha,conclusion -q '"commit \(.headSha) \(.conclusion)"' | tee run.txt
+        gh run download "$id" -R n2ray/xdesk -n xdesk-ubuntu2604-arm64 -D img
+        cd img && sha256sum -c xdesk-ubuntu2604-arm64.tar.gz.sha256 && ls -la
+    - name: Release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        sha=$(cut -d' ' -f1 img/xdesk-ubuntu2604-arm64.tar.gz.sha256)
+        cat > notes.md <<NOTES
+        Ubuntu 26.04 LTS + XFCE for XDesk's built-in Linux (arm64), the image a new installation starts from.
+        XDesk's own part (\`xdesk-core\`: the user xdesk, sudo, apt in the app, the Adreno GPU drivers) is a
+        package from this repository's apt source, kept up to date by the app; nothing else is changed from Ubuntu.
+
+        Built from n2ray/xdesk $(cut -d' ' -f2 run.txt) (\`linux/build-rootfs.sh\`).
+        SHA-256: \`$sha\`
+        NOTES
+        gh release create "${{ inputs.tag }}" -R "$GITHUB_REPOSITORY" --title "Ubuntu 26.04 image ${{ inputs.tag }}" \
+          --notes-file notes.md img/xdesk-ubuntu2604-arm64.tar.gz img/xdesk-ubuntu2604-arm64.tar.gz.sha256

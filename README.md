@@ -1,6 +1,6 @@
 # XDesk apt repository
 
-The packages XDesk's built-in Ubuntu 26.04 gets from XDesk: `xdesk-core`, what the system needs to run inside the
+The image a new XDesk built-in Ubuntu 26.04 starts from (Releases, Actions → Image), and the packages it gets from XDesk: `xdesk-core`, what the system needs to run inside the
 XDesk app (with the Adreno GPU drivers: lfdevs' Mesa over Ubuntu's, see `xdesk-gpu`). Sources and build scripts:
 [n2ray/xdesk](https://github.com/n2ray/xdesk), `linux/`.
 
