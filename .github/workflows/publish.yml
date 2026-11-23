@@ -25,6 +25,10 @@ jobs:
     steps:
     - uses: actions/checkout@v7
       with:
+        path: self
+        fetch-depth: 1
+    - uses: actions/checkout@v7
+      with:
         repository: n2ray/xdesk
         ref: ${{ inputs.ref }}
         path: xdesk
@@ -65,7 +69,7 @@ jobs:
           sh /w/xdesk/linux/make-repo.sh /w/debs /w/site
           cp /w/xdesk/linux/apt/xdesk-archive.asc /w/site/
           touch /w/site/.nojekyll
-          cp /w/README.md /w/site/
+          cp /w/self/README.md /w/site/
           # As a phone would: only the public key, the signed index, the package
           cp /w/xdesk/linux/apt/xdesk-archive.asc /usr/share/keyrings/xdesk-archive.asc
           printf "Types: deb\nURIs: file:/w/site\nSuites: resolute\nComponents: main\nSigned-By: /usr/share/keyrings/xdesk-archive.asc\n" \
