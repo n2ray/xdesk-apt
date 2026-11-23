@@ -9,13 +9,9 @@ on:
       ref:
         description: 'n2ray/xdesk branch or tag to build from'
         default: 'builtin-linux'
-      mesa_run:
-        description: "xdesk-mesa: a successful run id of this repository's xdesk-mesa workflow to include (empty: none)"
-        default: ''
 
 permissions:
   contents: write
-  actions: read
 
 concurrency: publish
 
@@ -46,13 +42,6 @@ jobs:
             ls old/pool/main/${p}_*.deb | sort -t_ -k2,2V | tail -2 | xargs -r cp -t debs
           done
         fi
-    - name: xdesk-mesa
-      if: inputs.mesa_run != ''
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        gh run download "${{ inputs.mesa_run }}" -R "$GITHUB_REPOSITORY" -p 'xdesk-mesa-*' -D mesa
-        cp mesa/*/*.deb debs/
     - name: Build and sign
       env:
         XDESK_APT_KEY: ${{ secrets.XDESK_APT_KEY }}
