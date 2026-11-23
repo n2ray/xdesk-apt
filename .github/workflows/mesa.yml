@@ -1,0 +1,83 @@
+name: xdesk-mesa
+
+# Ubuntu's Mesa rebuilt with Adreno's KGSL (n2ray/xdesk linux/mesa/build-mesa.sh). Every day: when Ubuntu 26.04's
+# Mesa is not the one published here and not built yet, it is built and an issue says so. Publishing stays by hand
+# (Publish, mesa_run = that run): XDesk's repository is pinned above Ubuntu's, so until then systems keep the
+# published Mesa, Ubuntu's fixes included only once this is published.
+on:
+  schedule:
+  - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      rev:
+        description: '+xdeskN for this Ubuntu version (a rebuild of the same one: 2, 3...)'
+        default: '1'
+      force:
+        description: 'build even if nothing changed'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      build: ${{ steps.v.outputs.build }}
+      version: ${{ steps.v.outputs.version }}
+    steps:
+    - id: v
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        ubuntu=$(docker run --rm --platform linux/arm64 ubuntu:26.04 sh -c \
+          'apt-get update -qq >/dev/null && apt-cache policy mesa-vulkan-drivers | sed -n "s/^  Candidate: //p"')
+        [ -n "$ubuntu" ] || { echo "no Ubuntu Mesa version"; exit 1; }
+        published=$(curl -fsL https://n2ray.github.io/xdesk-apt/dists/resolute/main/binary-arm64/Packages |
+          awk '/^Package: mesa-vulkan-drivers$/ { f = 1 } f && /^Version:/ { print $2; exit }' || true)
+        name=xdesk-mesa-$(echo "$ubuntu" | tr ':' '_')
+        built=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$name" -q '[.artifacts[] | select(.expired | not)] | length')
+        echo "Ubuntu $ubuntu, published ${published:-none}, built artifacts $built"
+        build=false
+        if [ "${{ inputs.force }}" = true ]; then build=true
+        elif [ "${published%+xdesk*}" != "$ubuntu" ] && [ "$built" = 0 ]; then build=true; fi
+        echo "build=$build" >> "$GITHUB_OUTPUT"
+        echo "version=$ubuntu" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: check
+    if: needs.check.outputs.build == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 300
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: n2ray/xdesk
+        ref: builtin-linux
+        fetch-depth: 1
+        sparse-checkout: linux
+    - name: Build in ubuntu:26.04
+      run: docker run --rm --platform linux/arm64 -v "$PWD:/src" ubuntu:26.04 sh /src/linux/mesa/build-mesa.sh /src/out "${{ inputs.rev || '1' }}"
+    - id: name
+      run: echo "name=xdesk-mesa-$(tr ':' '_' < out/UBUNTU_VERSION)" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@v7
+      with:
+        name: ${{ steps.name.outputs.name }}
+        path: out/*.deb
+        compression-level: 0
+        retention-days: 90
+    - name: Say so
+      if: always()
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        run="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+        if [ "${{ job.status }}" = success ]; then
+          gh issue create -R "$GITHUB_REPOSITORY" -t "xdesk-mesa built for Ubuntu Mesa $(cat out/UBUNTU_VERSION)" -b \
+            "Built: $run. Test it on a phone (glmark2, Zink, Chrome video), then run Publish with mesa_run = $GITHUB_RUN_ID."
+        else
+          gh issue create -R "$GITHUB_REPOSITORY" -t "xdesk-mesa build failed (Ubuntu Mesa ${{ needs.check.outputs.version }})" -b "$run"
+        fi

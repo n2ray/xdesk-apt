@@ -1,0 +1,86 @@
+name: Publish
+
+# XDesk's apt repository on GitHub Pages (branch gh-pages): xdesk-core built from n2ray/xdesk at REF, signed with
+# XDESK_APT_KEY, checked with the public key the app and xdesk-core carry, then published. Every installed XDesk
+# system takes a new xdesk-core when its app asks for it: run this on purpose only.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'n2ray/xdesk branch or tag to build from'
+        default: 'builtin-linux'
+      mesa_run:
+        description: "xdesk-mesa: a successful run id of this repository's xdesk-mesa workflow to include (empty: none)"
+        default: ''
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency: publish
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04-arm
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: n2ray/xdesk
+        ref: ${{ inputs.ref }}
+        path: xdesk
+        fetch-depth: 1
+        sparse-checkout: linux
+    - name: Previous repository
+      run: |
+        mkdir -p old debs
+        if git ls-remote --exit-code "https://github.com/$GITHUB_REPOSITORY" gh-pages >/dev/null; then
+          git clone -q --depth 1 -b gh-pages "https://github.com/$GITHUB_REPOSITORY" old
+        fi
+        # Kept: the last two versions of each package (one to go back to)
+        if [ -d old/pool/main ]; then
+          ls old/pool/main/*.deb 2>/dev/null | xargs -rn1 basename | cut -d_ -f1 | sort -u | while read -r p; do
+            ls old/pool/main/${p}_*.deb | sort -t_ -k2,2V | tail -2 | xargs -r cp -t debs
+          done
+        fi
+    - name: xdesk-mesa
+      if: inputs.mesa_run != ''
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh run download "${{ inputs.mesa_run }}" -R "$GITHUB_REPOSITORY" -p 'xdesk-mesa-*' -D mesa
+        cp mesa/*/*.deb debs/
+    - name: Build and sign
+      env:
+        XDESK_APT_KEY: ${{ secrets.XDESK_APT_KEY }}
+      run: |
+        [ -n "$XDESK_APT_KEY" ] || { echo "no XDESK_APT_KEY"; exit 1; }
+        [ -f xdesk/linux/apt/xdesk-archive.asc ] || { echo "n2ray/xdesk has no linux/apt/xdesk-archive.asc"; exit 1; }
+        docker run --rm --platform linux/arm64 -e XDESK_APT_KEY -v "$PWD:/w" ubuntu:26.04 sh -euc '
+          apt-get update -q && apt-get install -y -q --no-install-recommends ca-certificates curl gnupg apt-utils >/dev/null
+          # A version already published stays as it was (the same version with other bytes breaks apt): raise it
+          sh /w/xdesk/linux/build-debs.sh /w/new
+          for f in /w/new/*.deb; do
+            if [ -e /w/debs/${f##*/} ]; then echo "kept as published: ${f##*/}"; else cp "$f" /w/debs/; fi
+          done
+          sh /w/xdesk/linux/make-repo.sh /w/debs /w/site
+          cp /w/xdesk/linux/apt/xdesk-archive.asc /w/site/
+          touch /w/site/.nojekyll
+          cp /w/README.md /w/site/
+          # As a phone would: only the public key, the signed index, the package
+          cp /w/xdesk/linux/apt/xdesk-archive.asc /usr/share/keyrings/xdesk-archive.asc
+          printf "Types: deb\nURIs: file:/w/site\nSuites: resolute\nComponents: main\nSigned-By: /usr/share/keyrings/xdesk-archive.asc\n" \
+            > /etc/apt/sources.list.d/xdesk-test.sources
+          apt-get update -o Dir::Etc::SourceList=/etc/apt/sources.list.d/xdesk-test.sources -o Dir::Etc::SourceParts=- 2>&1 | tee /tmp/u
+          ! grep -q "^[EW]:" /tmp/u
+          apt-cache policy xdesk-core
+          apt-get install -y -q --download-only xdesk-core'
+        find site -type f | sort
+    - name: Publish to gh-pages
+      run: |
+        cd site
+        git init -q -b gh-pages
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add -A
+        git commit -q -m "XDesk apt repository from n2ray/xdesk ${{ inputs.ref }}"
+        git push -f "https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY" gh-pages
