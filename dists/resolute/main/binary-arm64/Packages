@@ -1,0 +1,88 @@
+Package: xdesk-core
+Architecture: arm64
+Version: 10
+Priority: optional
+Section: misc
+Maintainer: n2ray <n2ray@users.noreply.github.com>
+Depends: perl-base, passwd, util-linux, dpkg (>= 1.19), ca-certificates, curl, libstdc++6, libxcb1, libxrandr2
+Filename: pool/main/xdesk-core_10_arm64.deb
+Size: 7122524
+MD5sum: a00cf054e74999312543f2d54b26f296
+SHA1: 5b316955e24e043b89b3cfb399d72ad0af6f8430
+SHA256: ed4d28ff24935930ab0ca64e1830aff07f580ced12505d519332c766c13aff6f
+SHA512: a5f8e06ce3755a354f2e99fd0a0dc5d047e356fe9bfffce2216f261ff118c7a77ce1295768421231da0d32bab7fbead5581aecd91d12a21cd3a8c7e9afffd275
+Description: XDesk's built-in Ubuntu: what it needs to run inside the XDesk app
+ The user xdesk (the desktop's, with a sudo that works without setuid), apt
+ under the app's fake root, no snaps (Firefox and Chrome from their makers'
+ repositories), the Adreno GPU drivers (lfdevs' Mesa over Ubuntu's, termuxva),
+ Chrome's flags for the phone's GPU, xfwm4 without GLX vblank, and XDesk's own
+ repository. Nothing about the look: XFCE stays as it comes.
+
+Package: xdesk-core
+Architecture: arm64
+Version: 11
+Priority: optional
+Section: misc
+Maintainer: n2ray <n2ray@users.noreply.github.com>
+Depends: perl-base, passwd, util-linux, dpkg (>= 1.19), ca-certificates, curl, libstdc++6, libxcb1, libxrandr2
+Filename: pool/main/xdesk-core_11_arm64.deb
+Size: 7123704
+MD5sum: 42cc92d07db1f049c9b90df04a12a541
+SHA1: 3bf2d7aa98951328283b0717f09ea319aa1bfef6
+SHA256: fd3f0141163de74c1a9aba83ad351d595d5b70f9e8e5b36e27aa270a23853e04
+SHA512: 900e452ece731a21412c3dce90f4a8a1406cdf693b2e76cb2081052f5ea1473d57b554a45ad05244fa4590e3e80c37a2d4c8d350541dc090a1b03a1b27d619f4
+Description: XDesk's built-in Ubuntu: what it needs to run inside the XDesk app
+ The user xdesk (the desktop's, with a sudo that works without setuid), apt
+ under the app's fake root, no snaps (Firefox and Chrome from their makers'
+ repositories), the Adreno GPU drivers (lfdevs' Mesa over Ubuntu's, termuxva),
+ Chrome's flags for the phone's GPU, xfwm4 without GLX vblank, and XDesk's own
+ repository. Nothing about the look: XFCE stays as it comes.
+
+Package: xdesk-core
+Architecture: arm64
+Version: 12
+Priority: optional
+Section: misc
+Maintainer: n2ray <n2ray@users.noreply.github.com>
+Depends: perl-base, passwd, util-linux, dpkg (>= 1.19), ca-certificates, curl, libstdc++6, libxcb1, libxrandr2
+Filename: pool/main/xdesk-core_12_arm64.deb
+Size: 7125964
+MD5sum: c06fa5151a2e1db843f226b542451058
+SHA1: c43e35137836ebaa811c9a0ec023ae4090101c8d
+SHA256: 11a0f1c0bc39605561d528a76ffd3e10a63b001e2220191389af1eb43f6ef413
+SHA512: 1896db4693534a8dacfb4e14d72c7d25a6a03a7bd7f41589ad7b85acbaf28d6100212068d32dda6d5e52aac58ab47506ee9d110142a32ba8629ff0259322cd96
+Description: XDesk's built-in Ubuntu: what it needs to run inside the XDesk app
+ The user xdesk (the desktop's, with a sudo that works without setuid), apt
+ under the app's fake root, no snaps (Firefox and Chrome from their makers'
+ repositories), the Adreno GPU drivers (lfdevs' Mesa over Ubuntu's, termuxva),
+ Chrome's flags for the phone's GPU, xfwm4 without GLX vblank, and XDesk's own
+ repository. Nothing about the look: XFCE stays as it comes.
+
+Package: xfwm4
+Architecture: arm64
+Version: 4.20.0-1build1+xdesk1
+Priority: optional
+Section: xfce
+Maintainer: Debian Xfce Maintainers <debian-xfce@lists.debian.org>
+Installed-Size: 3148
+Provides: x-window-manager
+Depends: libc6 (>= 2.38), libcairo2 (>= 1.2.4), libepoxy0 (>= 1.5.2), libgdk-pixbuf-2.0-0 (>= 2.25.2), libglib2.0-0t64 (>= 2.80.0), libgtk-3-0t64 (>= 3.21.5), libpango-1.0-0 (>= 1.14.0), libpangocairo-1.0-0 (>= 1.14.0), libstartup-notification0 (>= 0.7), libwnck-3-0 (>= 2.91.6), libx11-6 (>= 2:1.2.99.901), libxcomposite1 (>= 1:0.4.6), libxdamage1 (>= 1:1.1), libxext6 (>= 2:1.3.0), libxfce4ui-2-0 (>= 4.11.0), libxfce4util7 (>= 4.9.0), libxfconf-0-3 (>= 4.6.0), libxfixes3 (>= 1:4.0.1), libxinerama1 (>= 2:1.1.4), libxpresent1 (>= 1.0.1), libxrandr2 (>= 2:1.2.99.3), libxrender1 (>= 1:0.9.12), libxres1 (>= 2:1.2.1)
+Recommends: librsvg2-common
+Suggests: xfce4
+Filename: pool/main/xfwm4_4.20.0-1build1+xdesk1_arm64.deb
+Size: 509784
+MD5sum: 119332f0a9bdad8c86fd2f7f31bb3816
+SHA1: 7c79e20159d8be0cc219ee8418b116953d7e1041
+SHA256: 01171595309b1913b82a076dab49a18e763d8c94255dee7a9f8d42757c74972c
+SHA512: db326209ed6e16fdfa9420e1410df269aaea1f7eb32f8a7114178466d58df742d6a703fc9374f76efcab05878622a7fef0dd663b569e434765f4f73e701a7c14
+Homepage: https://docs.xfce.org/xfce/xfwm4/start
+Description: window manager of the Xfce project
+ This package contains xfwm4 which is the window manager for Xfce4.  It is
+ designed to run with the rest of Xfce4 but makes a capable window manager
+ for GNOME or KDE.
+ .
+ Install xfwm4 if you want a small, resource saving window manager which
+ complies to the standards defined at http://www.freedesktop.org/. Without
+ xfce4 installed this only gives you a window manager not the full
+ environment.
+

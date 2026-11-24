@@ -1,0 +1,27 @@
+Architectures: arm64 all
+Codename: resolute
+Components: main
+Date: Tue, 24 Nov 2026 16:07:28 +0000
+Label: XDesk
+Origin: XDesk
+Suite: resolute
+MD5Sum:
+ d41d8cd98f00b204e9800998ecf8427e                0 main/binary-all/Packages
+ 88b906809dd7fc6a284f72bac33421d7               29 main/binary-all/Packages.gz
+ 43c8a2f86453821b534242e50fbf7a0a             4909 main/binary-arm64/Packages
+ acd645c157367bce9395ab9581e9330c             1960 main/binary-arm64/Packages.gz
+SHA1:
+ da39a3ee5e6b4b0d3255bfef95601890afd80709                0 main/binary-all/Packages
+ 2833eb3b6af2385defebd72a00848371c0cf615f               29 main/binary-all/Packages.gz
+ 82a91013f791d8355f0e7a8f7b23135e71e2727e             4909 main/binary-arm64/Packages
+ dbe38944a5d6876c2d43977496661e7089f2cab0             1960 main/binary-arm64/Packages.gz
+SHA256:
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855                0 main/binary-all/Packages
+ 63f1eff3179e30bd7a338057f7af21d6499408dc1c2f7a265ef0529a9ce5ab63               29 main/binary-all/Packages.gz
+ 03afe935f3d625698e6b8005575cab637cec01fb5685892190b12e6ef2f6de49             4909 main/binary-arm64/Packages
+ 406e1d601b54e4b1686ae55bad2792d68223ff6355e4f29f980f6615faa3ba68             1960 main/binary-arm64/Packages.gz
+SHA512:
+ cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e                0 main/binary-all/Packages
+ 78d28e23ea7ab0ae026651c94c573062c8f49f67811e49d2504577b55de29b31e9a380fb6979ea3c0b4b656674e5c84d34cc912812e9fae9408ce071ca26603a               29 main/binary-all/Packages.gz
+ 43b4206aff2fca57b71640bd8e9079f78b00f5f155e65ae9bb961e1bce695d1d5451bef90a59dee013b0f44050b8e4e4f87219601b55fff6ccfe8324f3022a79             4909 main/binary-arm64/Packages
+ 2cd5887784f059dc2f1b9055926c5a9b6b66a178cb7808b0b9c088d8ee28ae40d74556981720440cbb06f98018069e929180028f28b76e94f91910ff86b3e63e             1960 main/binary-arm64/Packages.gz
